@@ -6,9 +6,9 @@ A modern, lightweight CRM system with integrated AI-powered lead generation capa
 
 ![Book of Business Screenshot](https://via.placeholder.com/800x400/3b82f6/ffffff?text=Book+of+Business+CRM)
 
-## ✨ Features
+## Features
 
-### 📊 Contact Management
+### Contact Management
 - **Complete CRUD operations** for contacts with custom fields
 - **Smart search** across all contact data including tags and notes
 - **Bulk operations** for efficient contact management
@@ -16,27 +16,27 @@ A modern, lightweight CRM system with integrated AI-powered lead generation capa
 - **Communication tracking** with full history
 - **File import/export** support (CSV, Excel formats)
 
-### 🎯 AI-Powered Lead Generation
+### AI-Powered Lead Generation
 - **OpenAI integration** for intelligent company discovery
 - **Apollo.io API** for contact data enrichment
 - **Smart filtering** to avoid existing customers and contacts
 - **Automated exclusion lists** from scraped customer data
 - **Progress tracking** with real-time status updates
 
-### 📈 Customer Data Integration
+### Customer Data Integration
 - **Web scraping capabilities** using Puppeteer
 - **Automated customer list updates** from existing systems
 - **Data synchronization** to maintain exclusion lists
 - **Progress monitoring** for scraping operations
 
-### 🎨 Modern User Experience
+### Modern User Experience
 - **Responsive design** that works on all devices
 - **Dark/Light theme support** with smooth transitions
 - **Activity timeline** for comprehensive audit trails
 - **Real-time updates** and progress indicators
 - **Intuitive dashboard** with key metrics
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Node.js** + **Express.js** - Server framework
@@ -59,7 +59,7 @@ A modern, lightweight CRM system with integrated AI-powered lead generation capa
 - **Docker** - Containerized deployment
 - **Docker Compose** - Multi-service orchestration
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -89,7 +89,7 @@ The application will automatically:
 - Create necessary tables and default data
 - Start the web server on port 3001
 
-## ⚙️ Configuration
+## Configuration
 
 ### API Keys Setup
 
@@ -111,7 +111,7 @@ SCRAPER_TIMEOUT=25
 # SCRAPER_MAX_CUSTOMERS=1000  # Optional limit
 ```
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Dashboard
 - View key metrics and overdue contacts
@@ -137,7 +137,7 @@ SCRAPER_TIMEOUT=25
 - Handles custom fields
 - Import progress tracking
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Contacts
 - `GET /api/contacts` - List all contacts
@@ -161,7 +161,7 @@ SCRAPER_TIMEOUT=25
 - `POST /api/upload` - Import contacts from file
 - `GET /api/export` - Export contacts to CSV
 
-## 🏗️ Development
+## Development
 
 ### Database Schema
 - **contacts** - Core contact information
@@ -177,7 +177,7 @@ SCRAPER_TIMEOUT=25
 - Component-based architecture
 - Mobile-first responsive design
 
-## ⚠️ Important Notes
+## Important Notes
 
 ### Alpha Software Disclaimer
 - **Not production ready** - Use for testing and development only
@@ -195,7 +195,7 @@ SCRAPER_TIMEOUT=25
 - **No external data sharing** except via configured APIs
 - **Scraping compliance**: Ensure you have permission for target sites
 
-## 🔗 Technologies Used
+## Technologies Used
 
 - [Node.js](https://nodejs.org/) - JavaScript runtime
 - [Express.js](https://expressjs.com/) - Web framework
