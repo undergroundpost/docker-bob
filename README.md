@@ -4,7 +4,7 @@
 
 A modern, lightweight CRM system with integrated AI-powered lead generation capabilities. Built as a comprehensive tech demo showcasing full-stack development with modern web technologies.
 
-![Book of Business Screenshot](https://via.placeholder.com/800x400/3b82f6/ffffff?text=Book+of+Business+CRM)
+![Book of Business Screenshot](images/dark-contacts.png)
 
 ## Features
 
