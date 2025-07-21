@@ -1,0 +1,19 @@
+services:
+  book-of-business:
+    build: .
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./public:/app/public
+      - ./server.js:/app/server.js
+    environment:
+      - NODE_ENV=production
+      # Scraper Configuration
+      - SCRAPER_HEADLESS=true
+      - SCRAPER_TIMEOUT=25
+      # - SCRAPER_MAX_CUSTOMERS=1000  # Uncomment to limit customers
+    restart: unless-stopped
+    mem_limit: 1g
+    shm_size: 2gb

@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book of Business</title>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body x-data="app()" x-init="init()">
+<div class="app-container">
+<!-- Sidebar -->
+<aside class="app-sidebar">
+<!-- Navigation -->
+<nav class="sidebar-nav">
+<!-- Gliding Selection Indicator -->
+<div class="nav-indicator" 
+     :class="`indicator-${currentView}`"></div>
+
+<ul class="nav-list">
+    <li class="nav-item">
+        <button @click="currentView = 'dashboard'" 
+                :class="currentView === 'dashboard' ? 'active' : ''"
+                class="nav-button">
+            <i data-feather="bar-chart-2" class="nav-icon"></i>
+            <span class="nav-text">Dashboard</span>
+        </button>
+    </li>
+    <li class="nav-item">
+        <button @click="currentView = 'contacts'" 
+                :class="currentView === 'contacts' ? 'active' : ''"
+                class="nav-button">
+            <i data-feather="users" class="nav-icon"></i>
+            <span class="nav-text">Contacts</span>
+        </button>
+    </li>
+    <li class="nav-item">
+        <button @click="currentView = 'timeline'; loadActivities()" 
+                :class="currentView === 'timeline' ? 'active' : ''"
+                class="nav-button">
+            <i data-feather="activity" class="nav-icon"></i>
+            <span class="nav-text">Timeline</span>
+        </button>
+    </li>
+    <li class="nav-item">
+        <button @click="currentView = 'leadgen'" 
+                :class="currentView === 'leadgen' ? 'active' : ''"
+                class="nav-button">
+            <i data-feather="target" class="nav-icon"></i>
+            <span class="nav-text">Leadgen</span>
+        </button>
+    </li>
+    <li class="nav-item">
+        <button @click="currentView = 'settings'" 
+                :class="currentView === 'settings' ? 'active' : ''"
+                class="nav-button">
+            <i data-feather="settings" class="nav-icon"></i>
+            <span class="nav-text">Settings</span>
+        </button>
+    </li>
+</ul>
+</nav>
+
+<!-- Sidebar Footer -->
+<div class="sidebar-footer">
+<!-- Footer can be used for other elements if needed -->
+</div>
+</aside>
+
+<!-- Main Content -->
+<main class="app-main">
+<!-- Dashboard View -->
+<div x-show="currentView === 'dashboard'" class="view">
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card" @click="goToContactsPage()">
+        <div class="stat-label">Total Contacts</div>
+        <div class="stat-number" x-text="dashboardData.totalContacts || 0"></div>
+        <div class="stat-subtitle">Your complete network</div>
+    </div>
+    
+    <div class="stat-card urgent" @click="showOverdueContacts()">
+        <div class="stat-label">Overdue Follow-ups</div>
+        <div class="stat-number" x-text="dashboardData.overdueContacts || 0"></div>
+        <div class="stat-subtitle">Needs immediate attention</div>
+    </div>
+    
+    <div class="stat-card upcoming" @click="showUpcomingContacts()">
+        <div class="stat-label">Upcoming (7 days)</div>
+        <div class="stat-number" x-text="dashboardData.upcomingContacts || 0"></div>
+        <div class="stat-subtitle">Well planned week ahead</div>
+    </div>
+    
+    <div class="stat-card" @click="goToContactsPage()">
+        <div class="stat-label">Weekly Communications</div>
+        <div class="stat-number" x-text="dashboardData.weeklyComms || 0"></div>
+        <div class="stat-subtitle">Stay engaged and active</div>
+    </div>
+    
+    <div class="stat-card" @click="goToContactsPage()">
+        <div class="stat-label">New Contacts (Month)</div>
+        <div class="stat-number" x-text="dashboardData.monthlyNewContacts || 0"></div>
+        <div class="stat-subtitle">Growing your network</div>
+    </div>
+    
+    <div class="stat-card" @click="currentView = 'leadgen'">
+        <div class="stat-label">AI Leads</div>
+        <div class="stat-number" x-text="dashboardData.apolloLeads || 0"></div>
+        <div class="stat-subtitle">AI-powered prospecting</div>
+    </div>
+</div>
+</div>
+
+<!-- Contacts View -->
+<div x-show="currentView === 'contacts'" class="view">
+<div class="page-header">
+    <h1 class="page-title">Contacts</h1>
+</div>
+
+<!-- Unified Contacts Toolbar -->
+<div class="contacts-toolbar">
+    <div class="toolbar-left">
+        <!-- Search Bar with Tooltip -->
+        <div class="contacts-search-wrapper">
+            <input type="text" 
+                   x-model="searchQuery" 
+                   @input="filterContacts()"
+                   @focus="showSearchHelp()"
+                   placeholder="Search contacts..." 
+                   class="contacts-search-input">
+            <div x-show="searchQuery" class="search-clear" @click="clearSearch()">✕</div>
+            
+            <!-- Search Tooltip -->
+            <div x-show="showSearchTooltip" class="search-tooltip">
+                <div class="search-tooltip-title">✨ Smart Search</div>
+                <div class="search-tooltip-content">
+                    Search across names, companies, emails, positions, notes, custom fields, and tags
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Filters -->
+        <div class="contact-filters">
+            <button @click="contactFilter = 'all'" 
+                    :class="contactFilter === 'all' ? 'active' : ''"
+                    class="filter-btn">All</button>
+            <button @click="contactFilter = 'overdue'" 
+                    :class="contactFilter === 'overdue' ? 'active' : ''"
+                    class="filter-btn">Overdue</button>
+            <button @click="contactFilter = 'upcoming'" 
+                    :class="contactFilter === 'upcoming' ? 'active' : ''"
+                    class="filter-btn">Upcoming</button>
+        </div>
+    </div>
+    
+    <div class="toolbar-right">
+        <!-- Selection Controls -->
+        <div x-show="!showBulkActions" class="selection-controls">
+            <button @click="showBulkActions = true; selectedContactIds = []" class="btn btn-secondary" x-show="filteredContacts.length > 0">
+                Select
+            </button>
+        </div>
+        
+        <div x-show="showBulkActions" class="selection-controls">
+            <button @click="selectAllContacts()" class="btn btn-secondary">
+                <span x-text="selectedContactIds.length === filteredContacts.length ? 'Deselect All' : 'Select All'"></span>
+            </button>
+            <button @click="showBulkActions = false; selectedContactIds = []" class="btn btn-secondary">
+                Cancel
+            </button>
+        </div>
+        
+        <button @click="showAddContact = true" class="btn btn-primary">Add Contact</button>
+    </div>
+</div>
+
+<!-- Bulk Actions -->
+<div x-show="showBulkActions" class="bulk-actions">
+    <div class="bulk-info">
+        <span x-text="selectedContactIds.length + ' contact(s) selected'"></span>
+    </div>
+    <div class="bulk-controls">
+        <select x-model="bulkContactMethod" class="form-control">
+            <option value="">Contact Method</option>
+            <option value="Phone">Phone</option>
+            <option value="Email">Email</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Text">Text</option>
+            <option value="Other">Other</option>
+        </select>
+        <input type="text" x-model="bulkContactNotes" placeholder="Notes (optional)" class="form-control">
+        <select x-model="bulkTagId" class="form-control">
+            <option value="">Add Tag (optional)</option>
+            <template x-for="tag in allTags" :key="tag.id">
+                <option :value="tag.id" x-text="tag.name"></option>
+            </template>
+        </select>
+        <button @click="bulkMarkAsContacted()" class="btn btn-success">Mark as Contacted</button>
+        <button @click="bulkAddTag()" class="btn btn-primary" x-show="bulkTagId">Add Tag to Selected</button>
+        <button @click="bulkDeleteContacts()" class="btn btn-danger">Delete Selected</button>
+    </div>
+</div>
+
+<div class="contacts-container">
+<div class="contact-list">
+    <template x-for="contact in filteredContacts" :key="contact.id">
+        <div class="contact-item" 
+             :class="{ 
+                 'selected': selectedContactIds.includes(contact.id),
+                 'overdue': isOverdue(contact.next_contact_date),
+                 'upcoming': isUpcoming(contact.next_contact_date),
+                 'selectable': showBulkActions
+             }"
+             @mouseenter="setHoveredContact(contact.id)"
+             @mouseleave="clearHoveredContact()">
+            <!-- Checkbox (only shown in select mode) -->
+            <div x-show="showBulkActions" class="contact-checkbox">
+                <input type="checkbox" 
+                       :checked="selectedContactIds.includes(contact.id)"
+                       @change="toggleContactSelection(contact.id)"
+                       @click.stop>
+            </div>
+            
+            <div class="contact-main" @click="showBulkActions ? toggleContactSelection(contact.id) : selectContact(contact.id)">
+                <div class="contact-info">
+                    <div class="contact-header">
+                        <div class="contact-name" x-text="contact.name"></div>
+                    </div>
+                    <div class="contact-company" x-text="contact.company || 'No company'"></div>
+                </div>
+                
+                <!-- Contact Tags (to the right of name/company, vertically centered) -->
+                <div class="contact-tags" x-show="contact.tags && contact.tags.length > 0">
+                    <template x-for="tag in contact.tags" :key="tag.id">
+                        <span class="tag-chip" :style="`background-color: ${tag.color}`">
+                            <span x-text="tag.name"></span>
+                        </span>
+                    </template>
+                </div>
+            </div>
+            
+            <div class="contact-meta" @click="showBulkActions ? toggleContactSelection(contact.id) : selectContact(contact.id)">
+                <div class="contact-date" 
+                     :class="{
+                         'overdue': isOverdue(contact.next_contact_date),
+                         'upcoming': isUpcoming(contact.next_contact_date)
+                     }"
+                     x-text="'Due: ' + contact.next_contact_date"></div>
+                <div class="contact-date" x-text="'Last: ' + (contact.last_contact_date || 'Never')"></div>
+            </div>
+            
+            <!-- Quick Actions (show on hover or when in bulk mode) -->
+            <div class="contact-quick-actions" 
+                 x-show="(hoveredContactId === contact.id && !showBulkActions) || showBulkActions"
+                 @click.stop>
+                <button @click="viewContactTimeline(contact.id)" 
+                        class="quick-action-btn timeline-btn" 
+                        title="View Timeline">
+                    <i data-feather="activity"></i>
+                </button>
+                <button @click="quickScheduleFollowUp(contact.id, 7)" 
+                        class="quick-action-btn schedule-btn" 
+                        title="Schedule Follow-up">
+                    <i data-feather="calendar"></i>
+                </button>
+                <button @click="openEmailClient(contact.email)" 
+                        class="quick-action-btn email-btn" 
+                        title="Send Email"
+                        x-show="contact.email">
+                    <i data-feather="mail"></i>
+                </button>
+                <button @click="openLinkedIn(contact.linkedin)" 
+                        class="quick-action-btn linkedin-btn" 
+                        title="View LinkedIn"
+                        x-show="contact.linkedin">
+                    <i data-feather="linkedin"></i>
+                </button>
+                <button @click="copyPhoneNumber(contact.phone)" 
+                        class="quick-action-btn phone-btn" 
+                        title="Copy Phone"
+                        x-show="contact.phone">
+                    <i data-feather="phone"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+</div>
+
+<!-- No Results Message -->
+<div x-show="searchQuery && filteredContacts.length === 0" class="no-results">
+    <div class="no-results-icon">🔍</div>
+    <div class="no-results-title">No contacts found</div>
+    <div class="no-results-subtitle">Try a different search term or check your spelling</div>
+</div>
+</div>
+</div>
+
+<!-- Activity Timeline View -->
+<div x-show="currentView === 'timeline'" class="view">
+<div class="page-header">
+    <h1 class="page-title">Activity Timeline</h1>
+</div>
+
+<!-- Timeline Toolbar -->
+<div class="timeline-toolbar">
+    <div class="toolbar-left">
+        <!-- Contact Filter -->
+        <div class="timeline-search-wrapper">
+            <input type="text" 
+                   x-model="timelineContactFilter" 
+                   @input="filterActivities()"
+                   placeholder="Filter by contact name..." 
+                   class="timeline-search-input">
+            <div x-show="timelineContactFilter" class="search-clear" @click="timelineContactFilter = ''; filterActivities()">✕</div>
+        </div>
+    </div>
+    
+    <div class="toolbar-right">
+        <button @click="showManualActivityForm = true" class="btn btn-primary">Add Manual Entry</button>
+    </div>
+</div>
+
+<!-- Timeline Content -->
+<div class="timeline-container">
+    <div class="timeline-list">
+        <template x-for="activity in filteredActivities" :key="activity.id">
+            <div class="activity-item">
+                <div class="activity-header">
+                    <div class="activity-contact" x-text="activity.contact_name || 'Unknown Contact'"></div>
+                    <div class="activity-date" x-text="formatActivityDate(activity.created_at)"></div>
+                </div>
+                
+                <div class="activity-description" x-text="activity.description"></div>
+                
+                <div class="activity-metadata" x-show="activity.metadata">
+                    <template x-if="activity.metadata && activity.metadata.method">
+                        <span class="activity-tag method-tag" x-text="activity.metadata.method"></span>
+                    </template>
+                    <template x-if="activity.metadata && activity.metadata.tag_name">
+                        <span class="activity-tag tag-tag" x-text="activity.metadata.tag_name"></span>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+    <!-- Empty State -->
+    <div x-show="filteredActivities.length === 0" class="timeline-empty">
+        <div class="timeline-empty-icon">📋</div>
+        <div class="timeline-empty-title">No activities found</div>
+        <div class="timeline-empty-subtitle">Activities will appear here as you interact with contacts</div>
+    </div>
+</div>
+</div>
+
+<!-- Leadgen View -->
+<div x-show="currentView === 'leadgen'" class="view">
+<div class="page-header">
+    <h1 class="page-title">Lead Generation</h1>
+</div>
+
+<!-- Leadgen Toolbar -->
+<div class="leadgen-toolbar">
+    <div class="toolbar-left">
+        <!-- Configuration Status -->
+        <div class="leadgen-status">
+            <div class="status-item">
+                <span class="status-label">OpenAI API:</span>
+                <span class="status-value" :class="leadgenConfig.openai_api_key ? 'configured' : 'not-configured'">
+                    <span x-show="leadgenConfig.openai_api_key">✓ Configured</span>
+                    <span x-show="!leadgenConfig.openai_api_key">⚠ Not Configured</span>
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Apollo API:</span>
+                <span class="status-value" :class="leadgenConfig.apollo_api_key ? 'configured' : 'not-configured'">
+                    <span x-show="leadgenConfig.apollo_api_key">✓ Configured</span>
+                    <span x-show="!leadgenConfig.apollo_api_key">⚠ Not Configured</span>
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Max Companies:</span>
+                <span class="status-value" x-text="leadgenConfig.max_companies || 50"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toolbar-right">
+        <!-- Generate/Cancel Button -->
+        <button x-show="leadgenConfig.openai_api_key && leadgenConfig.apollo_api_key"
+                @click="hasRunningLeadgenSession() ? cancelLeadGeneration() : runLeadGeneration()" 
+                :class="hasRunningLeadgenSession() ? 'btn btn-danger btn-lg' : 'btn btn-primary btn-lg'">
+            <span x-show="!hasRunningLeadgenSession()">Generate Leads</span>
+            <span x-show="hasRunningLeadgenSession()">Cancel Generation</span>
+        </button>
+        
+        <button x-show="!leadgenConfig.openai_api_key || !leadgenConfig.apollo_api_key"
+                @click="currentView = 'settings'; activeSettingsTab = 'leadgen'"
+                class="btn btn-secondary btn-lg">
+            Configure APIs
+        </button>
+    </div>
+</div>
+
+<!-- Leadgen Content -->
+<div class="leadgen-container">
+
+    <!-- Error Display -->
+    <div x-show="leadgenErrors" class="leadgen-errors">
+        <h5 class="error-title">Lead Generation Error</h5>
+        <div class="error-message" x-text="leadgenErrors"></div>
+    </div>
+
+    <!-- Sessions List -->
+    <div x-show="leadgenSessions.length > 0" class="sessions-list">
+        <template x-for="session in leadgenSessions" :key="session.id">
+                <div class="session-item">
+                    <div class="session-header">
+                        <div class="session-status" :style="`color: ${getSessionStatusColor(session.status)}`">
+                            <span x-text="session.status.toUpperCase()"></span>
+                        </div>
+                        <div class="session-date" x-text="formatDate(session.created_at)"></div>
+                    </div>
+                    
+                    <!-- Progress Bar for Running Sessions -->
+                    <div x-show="session.status === 'running'">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" :style="`width: ${session.progress || 0}%`"></div>
+                            </div>
+                        </div>
+                        <div class="progress-message" x-text="session.message || 'Processing...'"></div>
+                    </div>
+                    
+                    <!-- Completed Session Details -->
+                    <div x-show="session.status !== 'running'" class="session-details">
+                        <div class="session-metric" x-show="session.companies_generated > 0">
+                            Companies: <strong x-text="session.companies_generated"></strong>
+                        </div>
+                        <div class="session-metric" x-show="session.contacts_generated > 0">
+                            Contacts: <strong x-text="session.contacts_generated"></strong>
+                        </div>
+                    </div>
+                    
+                    <!-- Session Message (for completed/failed/cancelled) -->
+                    <div class="session-message" x-show="session.status !== 'running' && session.message" x-text="session.message"></div>
+                    
+                    <!-- Error Message -->
+                    <div class="session-error" x-show="session.error" x-text="session.error"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+
+<!-- Settings View -->
+<div x-show="currentView === 'settings'" class="view">
+<div class="page-header">
+    <h1 class="page-title">Settings</h1>
+</div>
+
+<!-- Settings Toolbar -->
+<div class="settings-toolbar">
+    <div class="toolbar-left">
+        <!-- Configuration Status Overview -->
+        <div class="settings-status">
+            <div class="status-item" x-show="activeSettingsTab === 'general'">
+                <span class="status-label">Theme:</span>
+                <span class="status-value configured" x-text="currentTheme.charAt(0).toUpperCase() + currentTheme.slice(1)"></span>
+            </div>
+            <div class="status-item" x-show="activeSettingsTab === 'tags'">
+                <span class="status-label">Total Tags:</span>
+                <span class="status-value configured" x-text="allTags.length"></span>
+            </div>
+            <div class="status-item" x-show="activeSettingsTab === 'leadgen'">
+                <span class="status-label">APIs:</span>
+                <span class="status-value" :class="(leadgenConfig.openai_api_key && leadgenConfig.apollo_api_key) ? 'configured' : 'not-configured'">
+                    <span x-show="leadgenConfig.openai_api_key && leadgenConfig.apollo_api_key">✓ Both Configured</span>
+                    <span x-show="!leadgenConfig.openai_api_key || !leadgenConfig.apollo_api_key">⚠ Needs Configuration</span>
+                </span>
+            </div>
+            <div class="status-item" x-show="activeSettingsTab === 'leadgen'">
+                <span class="status-label">P/E Customers:</span>
+                <span class="status-value configured" x-text="scraperCustomersCount"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toolbar-right">
+        <!-- Tab Navigation -->
+        <div class="settings-tabs">
+            <button @click="activeSettingsTab = 'general'" 
+                    :class="activeSettingsTab === 'general' ? 'active' : ''"
+                    class="settings-tab-btn">General</button>
+            <button @click="activeSettingsTab = 'tags'" 
+                    :class="activeSettingsTab === 'tags' ? 'active' : ''"
+                    class="settings-tab-btn">Tags</button>
+            <button @click="activeSettingsTab = 'import'" 
+                    :class="activeSettingsTab === 'import' ? 'active' : ''"
+                    class="settings-tab-btn">Import</button>
+            <button @click="activeSettingsTab = 'leadgen'" 
+                    :class="activeSettingsTab === 'leadgen' ? 'active' : ''"
+                    class="settings-tab-btn">Leadgen</button>
+            <button @click="activeSettingsTab = 'backup'" 
+                    :class="activeSettingsTab === 'backup' ? 'active' : ''"
+                    class="settings-tab-btn">Backup</button>
+        </div>
+    </div>
+</div>
+
+<div class="settings-container">
+    <!-- General Tab -->
+    <div x-show="activeSettingsTab === 'general'" class="settings-section">
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Appearance</h3>
+                <p class="settings-card-subtitle">Customize your visual experience</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label class="setting-label">Theme</label>
+                        <p class="setting-description">Choose between light and dark mode</p>
+                    </div>
+                    <div class="setting-control">
+                        <div class="theme-selector">
+                            <button @click="setTheme('light')" 
+                                    :class="currentTheme === 'light' ? 'active' : ''"
+                                    class="theme-dot light-theme">
+                            </button>
+                            <button @click="setTheme('dark')" 
+                                    :class="currentTheme === 'dark' ? 'active' : ''"
+                                    class="theme-dot dark-theme">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tags Tab -->
+    <div x-show="activeSettingsTab === 'tags'" class="settings-section">
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Tag Management</h3>
+                <p class="settings-card-subtitle">Create and customize tags for better contact organization</p>
+            </div>
+            <div class="settings-card-content">
+                <!-- Create New Tag -->
+                <div class="tag-creation-section">
+                    <h4 class="section-title">Create New Tag</h4>
+                    <div class="tag-creation-form">
+                        <div class="tag-input-group">
+                            <input type="text" 
+                                   x-model="newTagName" 
+                                   class="form-control tag-name-input" 
+                                   placeholder="Enter tag name">
+                            <input type="color" 
+                                   x-model="newTagColor" 
+                                   class="color-picker-input">
+                            <button @click="createTag()" 
+                                    class="btn btn-primary">
+                                Create Tag
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Existing Tags -->
+                <div class="existing-tags-section">
+                    <h4 class="section-title">Existing Tags</h4>
+                    <div class="tags-grid">
+                        <template x-for="tag in allTags" :key="tag.id">
+                            <div class="tag-management-item">
+                                <!-- Normal View -->
+                                <div x-show="editingTag !== tag.id" class="tag-display">
+                                    <div class="tag-preview" :style="`background-color: ${tag.color}`">
+                                        <span x-text="tag.name"></span>
+                                    </div>
+                                    <div class="tag-actions">
+                                        <button @click="editingTag = tag.id" class="btn btn-secondary btn-sm">
+                                            Edit
+                                        </button>
+                                        <button @click="deleteTag(tag.id)" class="btn btn-danger btn-sm">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Edit View -->
+                                <div x-show="editingTag === tag.id" class="tag-edit">
+                                    <div class="tag-edit-inputs">
+                                        <input type="text" 
+                                               x-model="tag.name" 
+                                               class="form-control tag-name-input" 
+                                               placeholder="Tag name">
+                                        <input type="color" 
+                                               x-model="tag.color" 
+                                               class="color-picker-input">
+                                    </div>
+                                    <div class="tag-edit-actions">
+                                        <button @click="updateTag(tag)" class="btn btn-success btn-sm">
+                                            Save
+                                        </button>
+                                        <button @click="editingTag = null" class="btn btn-secondary btn-sm">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Tab -->
+    <div x-show="activeSettingsTab === 'import'" class="settings-section">
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Import Contacts</h3>
+                <p class="settings-card-subtitle">Upload your existing contact lists</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="upload-area" 
+                     @drop.prevent="handleFileDrop($event)" 
+                     @dragover.prevent 
+                     @dragenter.prevent>
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" @change="handleFileSelect($event)" class="sr-only">
+                    <label for="fileInput" class="upload-label">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-title">Drop your contacts here!</div>
+                        <div class="upload-hint">We support CSV and Excel files</div>
+                    </label>
+                </div>
+                
+                <div x-show="uploadResult" class="upload-result">
+                    <h4 class="upload-result-title">Import Result</h4>
+                    <div x-text="uploadResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leadgen Tab -->
+    <div x-show="activeSettingsTab === 'leadgen'" class="settings-section">
+        
+        <!-- OpenAI Configuration Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">OpenAI Configuration</h3>
+                <p class="settings-card-subtitle">Configure your OpenAI API for lead generation</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="form-group">
+                    <label class="form-label">OpenAI API Key *</label>
+                    <div class="password-input-wrapper">
+                        <input :type="showOpenAIPassword ? 'text' : 'password'" 
+                               x-model="leadgenConfig.openai_api_key" 
+                               class="form-control" 
+                               placeholder="sk-..."
+                               @focus="if ($event.target.value.includes('•')) { $event.target.value = ''; leadgenConfig.openai_api_key = ''; }">
+                        <button type="button" @click="toggleOpenAIPasswordVisibility()" class="password-toggle-btn">
+                            <span x-show="!showOpenAIPassword">👁️</span>
+                            <span x-show="showOpenAIPassword">🙈</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">OpenAI Model</label>
+                    <select x-model="leadgenConfig.openai_model" class="form-control">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apollo Configuration Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Apollo Configuration</h3>
+                <p class="settings-card-subtitle">Configure your Apollo API for contact data</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="form-group">
+                    <label class="form-label">Apollo API Key *</label>
+                    <div class="password-input-wrapper">
+                        <input :type="showApolloPassword ? 'text' : 'password'" 
+                               x-model="leadgenConfig.apollo_api_key" 
+                               class="form-control" 
+                               placeholder="Your Apollo API key"
+                               @focus="if ($event.target.value.includes('•')) { $event.target.value = ''; leadgenConfig.apollo_api_key = ''; }">
+                        <button type="button" @click="toggleApolloPasswordVisibility()" class="password-toggle-btn">
+                            <span x-show="!showApolloPassword">👁️</span>
+                            <span x-show="showApolloPassword">🙈</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generation Settings Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Generation Settings</h3>
+                <p class="settings-card-subtitle">Customize lead generation parameters</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Max Companies</label>
+                        <input type="number" x-model="leadgenConfig.max_companies" class="form-control" min="1" max="200" placeholder="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Request Delay (seconds)</label>
+                        <input type="number" step="0.1" x-model="leadgenConfig.request_delay" class="form-control" min="0.5" max="5" placeholder="1.2">
+                    </div>
+                </div>
+                
+                <div class="settings-actions">
+                    <button @click="saveLeadgenConfig()" class="btn btn-primary">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Precision Expedited Card -->
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Precision Expedited</h3>
+                <p class="settings-card-subtitle">Scrape customer data for exclusion list</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-label">Total P/E Customers:</span>
+                        <span class="stat-value" x-text="scraperCustomersCount"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Login URL *</label>
+                        <input type="url" x-model="scraperConfig.login_url" class="form-control" placeholder="https://admin.precisionexpedited.com/login">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Customers URL</label>
+                        <input type="url" x-model="scraperConfig.customers_url" class="form-control" placeholder="Leave blank to auto-detect">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Username *</label>
+                        <input type="text" x-model="scraperConfig.username" class="form-control" placeholder="Your admin username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <div class="password-input-wrapper">
+                            <input :type="showPassword ? 'text' : 'password'" 
+                                   x-model="scraperConfig.password" 
+                                   class="form-control" 
+                                   placeholder="Your admin password"
+                                   @focus="if ($event.target.value.includes('•')) { $event.target.value = ''; scraperConfig.password = ''; }">
+                            <button type="button" @click="togglePasswordVisibility()" class="password-toggle-btn">
+                                <span x-show="!showPassword">👁️</span>
+                                <span x-show="showPassword">🙈</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-actions">
+                    <button @click="saveScraperConfig()" class="btn btn-secondary">Save Configuration</button>
+                    <button @click="runScraper()" 
+                            :disabled="scraperProgress.isRunning || !scraperConfig.login_url || !scraperConfig.username || !scraperConfig.password"
+                            class="btn btn-primary">
+                        <span x-show="!scraperProgress.isRunning">Update Customer List</span>
+                        <span x-show="scraperProgress.isRunning">Running...</span>
+                    </button>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div x-show="scraperProgress.isRunning || (scraperProgress.progress && scraperProgress.progress.percentage > 0)" class="progress-section">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" :style="`width: ${scraperProgress.progress?.percentage || 0}%`"></div>
+                        </div>
+                        <div class="progress-percentage" x-text="(scraperProgress.progress?.percentage || 0) + '%'"></div>
+                    </div>
+                    <div class="progress-message" x-text="scraperProgress.progress?.message || 'Initializing...'"></div>
+                </div>
+                
+                <!-- Error Display -->
+                <div x-show="scraperErrors" class="error-section">
+                    <h5 class="error-title">Scraper Error</h5>
+                    <div class="error-message" x-text="scraperErrors"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Tab -->
+    <div x-show="activeSettingsTab === 'backup'" class="settings-section">
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <h3 class="settings-card-title">Backup & Export</h3>
+                <p class="settings-card-subtitle">Download your data for backup or migration</p>
+            </div>
+            <div class="settings-card-content">
+                <div class="backup-option">
+                    <div class="backup-info">
+                        <h4 class="backup-title">Export to CSV</h4>
+                        <p class="backup-description">Download all your contacts as a CSV file for backup or migration purposes.</p>
+                    </div>
+                    <button @click="exportContacts()" class="btn btn-primary">Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- Contact Detail Modal -->
+<div x-show="selectedContact && currentView === 'contacts'" class="modal-overlay" @click="selectedContact = null">
+<div class="modal contact-modal" @click.stop>
+<div class="modal-header">
+<h3 class="modal-title" x-text="selectedContact?.name"></h3>
+<div class="modal-header-actions">
+    <button x-show="!editMode" @click="editMode = true" class="btn btn-secondary">Edit</button>
+    <button x-show="editMode" @click="updateContact()" class="btn btn-primary">Save</button>
+    <button x-show="editMode" @click="cancelEdit()" class="btn btn-secondary">Cancel</button>
+    
+    <!-- Quick Actions in Modal -->
+    <div class="modal-quick-actions">
+        <button @click="viewContactTimeline(selectedContact.id)" class="btn btn-icon timeline-btn" title="View Timeline">
+            <i data-feather="activity"></i>
+        </button>
+        <button @click="openEmailClient(selectedContact.email)" class="btn btn-icon email-btn" title="Send Email" x-show="selectedContact.email">
+            <i data-feather="mail"></i>
+        </button>
+        <button @click="openLinkedIn(selectedContact.linkedin)" class="btn btn-icon linkedin-btn" title="View LinkedIn" x-show="selectedContact.linkedin">
+            <i data-feather="external-link"></i>
+        </button>
+    </div>
+    
+    <button @click="selectedContact = null" class="btn btn-icon">✕</button>
+</div>
+</div>
+<div class="modal-body">
+<div class="contact-details-container">
+<!-- Contact Information Section -->
+<div class="contact-details">
+    
+    <!-- Core Information -->
+    <div class="info-section">
+        <h4 class="info-section-title">Contact Information</h4>
+        <div class="detail-row">
+            <label class="detail-label">Company:</label>
+            <div x-show="!editMode" class="detail-value" x-html="formatClickableContent(selectedContact?.company)"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="text" x-model="editedContact.company" class="form-control" placeholder="Company name">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">Email:</label>
+            <div x-show="!editMode" class="detail-value" x-html="formatClickableContent(selectedContact?.email)"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="email" x-model="editedContact.email" class="form-control" placeholder="email@example.com">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">Phone:</label>
+            <div x-show="!editMode" class="detail-value" x-text="selectedContact?.phone || 'N/A'"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="tel" x-model="editedContact.phone" class="form-control" placeholder="Phone number">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">LinkedIn:</label>
+            <div x-show="!editMode" class="detail-value" x-html="formatClickableContent(selectedContact?.linkedin)"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="url" x-model="editedContact.linkedin" class="form-control" placeholder="linkedin.com/in/username">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">Position:</label>
+            <div x-show="!editMode" class="detail-value" x-text="selectedContact?.position || 'N/A'"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="text" x-model="editedContact.position" class="form-control" placeholder="Job title">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">Frequency:</label>
+            <div x-show="!editMode" class="detail-value" x-text="(selectedContact?.contact_frequency || 7) + ' days'"></div>
+            <div x-show="editMode" class="edit-field-wrapper">
+                <input type="number" x-model="editedContact.contact_frequency" class="form-control" min="1" placeholder="Days between contacts">
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <label class="detail-label">Tags:</label>
+            <div class="detail-value">
+                <div class="tags-field-container">
+                    <!-- Current Tags -->
+                    <div class="current-tags-field" x-show="selectedContact.tags && selectedContact.tags.length > 0">
+                        <template x-for="tag in selectedContact.tags" :key="tag.id">
+                            <span class="tag-chip removable" :style="`background-color: ${tag.color}`">
+                                <span x-text="tag.name"></span>
+                                <button @click="removeTagFromContact(selectedContact.id, tag.id)" class="tag-remove">×</button>
+                            </span>
+                        </template>
+                    </div>
+                    
+                    <!-- Add Tag Button -->
+                    <div class="add-tag-field" x-show="getAvailableTagsForContact(selectedContact.id).length > 0" x-data="{ showTagSelect: false }">
+                        <button @click="showTagSelect = !showTagSelect" class="tag-add-simple-btn" :class="{ 'active': showTagSelect }">
+                            +
+                        </button>
+                        
+                        <!-- Simple select dropdown -->
+                        <select x-show="showTagSelect" 
+                                @change="if($event.target.value) { addTagToContact(selectedContact.id, $event.target.value); $event.target.value = ''; showTagSelect = false; }" 
+                                @click.away="showTagSelect = false"
+                                class="tag-select-simple">
+                            <option value="">Choose tag...</option>
+                            <template x-for="tag in getAvailableTagsForContact(selectedContact.id)" :key="tag.id">
+                                <option :value="tag.id" x-text="tag.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    
+                    <!-- No tags available -->
+                    <span x-show="(!selectedContact.tags || selectedContact.tags.length === 0) && getAvailableTagsForContact(selectedContact.id).length === 0" class="empty-field-state">No tags available</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Source indicator for Apollo-generated contacts -->
+        <div class="detail-row" x-show="selectedContact?.source === 'apollo_leadgen'">
+            <label class="detail-label">Source:</label>
+            <div class="detail-value">
+                <span class="source-badge apollo">🎯 Apollo Lead Generation</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Fields -->
+    <template x-if="(editMode ? editedContact : selectedContact) && (editMode ? editedContact : selectedContact).custom_fields && Object.keys((editMode ? editedContact : selectedContact).custom_fields).length > 0">
+        <div class="info-section">
+            <h4 class="info-section-title">Custom Fields</h4>
+            <template x-for="[key, value] in Object.entries((editMode ? editedContact : selectedContact).custom_fields)" :key="key">
+                <div class="detail-row">
+                    <label class="detail-label" x-text="key + ':'"></label>
+                    <div x-show="!editMode" class="detail-value" x-html="formatClickableContent(value)"></div>
+                    <div x-show="editMode" class="edit-field-wrapper">
+                        <input type="text" x-model="editedContact.custom_fields[key]" class="form-control">
+                        <button @click="removeCustomField(key)" class="btn btn-danger btn-icon delete-field">Delete</button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+
+    <!-- Add New Custom Field (Edit Mode Only) -->
+    <div x-show="editMode && selectedContact" class="info-section">
+        <h4 class="info-section-title">Add Custom Field</h4>
+        <div class="add-field-row">
+            <input type="text" x-model="newFieldKey" placeholder="Field name" class="form-control">
+            <input type="text" x-model="newFieldValue" placeholder="Field value" class="form-control">
+            <button @click="addCustomField()" class="btn btn-primary">Add</button>
+        </div>
+    </div>
+
+    <!-- Always Editable Notes Section -->
+    <template x-if="selectedContact">
+        <div class="info-section">
+            <h4 class="info-section-title">Notes</h4>
+            <div class="notes-wrapper">
+                <textarea x-model="selectedContact.notes" 
+                        @input="updateNotesDebounced()" 
+                        class="form-control notes-field" 
+                        placeholder="Add your notes here... (auto-saves)"></textarea>
+                <div class="notes-status" x-show="notesStatus" x-text="notesStatus"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Mark as Contacted Section -->
+    <div class="info-section">
+        <h4 class="info-section-title">Mark as Contacted</h4>
+        <div class="contact-action-form">
+            <div class="contact-form-row">
+                <div class="form-group">
+                    <label class="form-label">Contact Method *</label>
+                    <select x-model="contactMethod" class="form-control" required>
+                        <option value="">Select method...</option>
+                        <option value="Phone">Phone Call</option>
+                        <option value="Email">Email</option>
+                        <option value="Meeting">Meeting</option>
+                        <option value="Text">Text Message</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contact Date *</label>
+                    <input type="date" x-model="contactDate" class="form-control" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Notes (Optional)</label>
+                <textarea x-model="contactNotes" 
+                          class="form-control contact-notes" 
+                          placeholder="How did the conversation go? Any follow-up needed?"></textarea>
+            </div>
+            
+            <div class="contact-action-buttons">
+                <button @click="markAsContacted()" 
+                        :disabled="!contactMethod || !contactDate"
+                        class="btn btn-success btn-lg">
+                    Mark as Contacted
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Communication History -->
+<template x-if="selectedContact && selectedContact.communications && selectedContact.communications.length > 0">
+    <div class="info-section">
+        <h4 class="info-section-title">Communication History</h4>
+        <div class="communications-list">
+            <template x-for="comm in selectedContact.communications" :key="comm.id">
+                <div class="communication-item">
+                    <div class="comm-header">
+                        <span class="comm-method" x-text="comm.method"></span>
+                        <span class="comm-date" x-text="comm.date"></span>
+                        <div class="comm-actions">
+                            <button @click="editCommunication(comm)" class="btn btn-icon comm-edit">Edit</button>
+                            <button @click="deleteCommunication(comm.id)" class="btn btn-icon comm-delete">Delete</button>
+                        </div>
+                    </div>
+                    <div class="comm-notes" x-text="comm.notes || 'No notes'" 
+                         x-show="!comm.editing"></div>
+                    <div x-show="comm.editing" class="comm-edit-form">
+                        <textarea x-model="comm.editedNotes" class="form-control comm-edit-notes"></textarea>
+                        <div class="comm-edit-actions">
+                            <button @click="saveCommunication(comm)" class="btn btn-primary btn-sm">Save</button>
+                            <button @click="cancelEditCommunication(comm)" class="btn btn-secondary btn-sm">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>
+
+<!-- Delete Contact Button (only shown in edit mode) -->
+<template x-if="editMode">
+    <div class="info-section">
+        <div class="danger-zone-content">
+            <button @click="deleteContact(selectedContact.id)" class="btn btn-danger btn-lg btn-full-width">
+                Delete Contact
+            </button>
+        </div>
+    </div>
+</template>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Add Contact Modal -->
+<div x-show="showAddContact" class="modal-overlay" @click="showAddContact = false">
+<div class="modal" @click.stop>
+<div class="modal-header">
+<h3 class="modal-title">Add New Contact</h3>
+<button @click="showAddContact = false" class="btn btn-icon">✕</button>
+</div>
+<div class="modal-body modal-body-padded">
+<form @submit.prevent="addContact()">
+    <div class="form-group">
+        <label class="form-label">Name *</label>
+        <input type="text" x-model="newContact.name" required class="form-control" placeholder="Enter full name">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Company</label>
+        <input type="text" x-model="newContact.company" class="form-control" placeholder="Company or organization">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" x-model="newContact.email" class="form-control" placeholder="email@example.com">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" x-model="newContact.phone" class="form-control" placeholder="Phone number">
+    </div>
+    <div class="form-group">
+        <label class="form-label">LinkedIn</label>
+        <input type="url" x-model="newContact.linkedin" class="form-control" placeholder="linkedin.com/in/username">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Position</label>
+        <input type="text" x-model="newContact.position" class="form-control" placeholder="Job title or role">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Contact Frequency (days)</label>
+        <input type="number" x-model="newContact.contact_frequency" value="7" class="form-control" min="1" placeholder="7">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea x-model="newContact.notes" class="form-control" placeholder="Any additional notes or context"></textarea>
+    </div>
+    <div class="form-actions">
+        <button type="button" @click="showAddContact = false" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Contact</button>
+    </div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Manual Activity Modal -->
+<div x-show="showManualActivityForm" class="modal-overlay" @click="showManualActivityForm = false">
+<div class="modal" @click.stop>
+<div class="modal-header">
+<h3 class="modal-title">Add Manual Activity</h3>
+<button @click="showManualActivityForm = false" class="btn btn-icon">✕</button>
+</div>
+<div class="modal-body modal-body-padded">
+<form @submit.prevent="createManualActivity()">
+    <div class="form-group">
+        <label class="form-label">Contact *</label>
+        <select x-model="manualActivityContact" required class="form-control">
+            <option value="">Select contact...</option>
+            <template x-for="contact in contacts" :key="contact.id">
+                <option :value="contact.id" x-text="contact.name + (contact.company ? ' (' + contact.company + ')' : '')"></option>
+            </template>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Description *</label>
+        <textarea x-model="manualActivityDescription" required class="form-control" placeholder="Describe what happened (e.g., 'Met at conference', 'Referral from colleague')"></textarea>
+    </div>
+    <div class="form-actions">
+        <button type="button" @click="showManualActivityForm = false" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Activity</button>
+    </div>
+</form>
+</div>
+</div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // Initialize Feather icons
+  feather.replace();
+</script>
+</body>
+</html>
