@@ -524,13 +524,21 @@
                 <div class="setting-item">
                     <div class="setting-info">
                         <label class="setting-label">Theme</label>
-                        <p class="setting-description">Choose between light and dark mode</p>
+                        <p class="setting-description">Choose your visual theme</p>
                     </div>
                     <div class="setting-control">
                         <div class="theme-selector">
                             <button @click="setTheme('light')" 
                                     :class="currentTheme === 'light' ? 'active' : ''"
                                     class="theme-dot light-theme">
+                            </button>
+                            <button @click="setTheme('forest')" 
+                                    :class="currentTheme === 'forest' ? 'active' : ''"
+                                    class="theme-dot forest-theme">
+                            </button>
+                            <button @click="setTheme('tokyo')" 
+                                    :class="currentTheme === 'tokyo' ? 'active' : ''"
+                                    class="theme-dot tokyo-theme">
                             </button>
                             <button @click="setTheme('dark')" 
                                     :class="currentTheme === 'dark' ? 'active' : ''"

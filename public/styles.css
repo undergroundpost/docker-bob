@@ -142,6 +142,124 @@
 --completed-accent: #10b981;
 }
 
+/* Forest Theme - Nature-inspired with Sage Green accents */
+[data-theme="forest"] {
+--bg-primary: #fafaf8;
+--bg-secondary: #f5f5f2;
+--bg-tertiary: #ebebde;
+--bg-elevated: #ffffff;
+--bg-glass: rgba(250, 250, 248, 0.7);
+--bg-glass-heavy: rgba(250, 250, 248, 0.85);
+
+/* Solid colors instead of gradients */
+--bg-gradient-primary: #819171;
+--bg-gradient-secondary: #9CAF88;
+--bg-gradient-success: #758467;
+--bg-gradient-warning: #d4a574;
+--bg-gradient-danger: #c67856;
+--bg-gradient-subtle: #f5f5f2;
+
+--text-primary: #2d3929;
+--text-secondary: #4a5842;
+--text-tertiary: #697761;
+--text-quaternary: #8a9882;
+--text-inverse: #ffffff;
+--text-muted: #b4c1aa;
+
+--border-primary: #dfe6da;
+--border-secondary: #cbd5c0;
+--border-accent: #9CAF88;
+
+/* Accent Colors - Sage Green */
+--accent-primary: #819171;
+--accent-secondary: #758467;
+--accent-hover: #9CAF88;
+--accent-light: rgba(129, 145, 113, 0.15);
+--accent-gradient: #819171;
+
+--success: #819171;
+--success-gradient: #819171;
+--warning: #d4a574;
+--warning-gradient: #d4a574;
+--danger: #c67856;
+--danger-gradient: #c67856;
+
+/* State Colors */
+--overdue-bg: #f5f5f2;
+--overdue-text: #c67856;
+--overdue-border: #dfe6da;
+--overdue-accent: #c67856;
+
+--upcoming-bg: #f5f5f2;
+--upcoming-text: #d4a574;
+--upcoming-border: #dfe6da;
+--upcoming-accent: #d4a574;
+
+--completed-bg: #f5f5f2;
+--completed-text: #758467;
+--completed-border: #dfe6da;
+--completed-accent: #819171;
+}
+
+/* Tokyo Theme - Tech-inspired with Neon accents */
+[data-theme="tokyo"] {
+--bg-primary: #0a0e1a;
+--bg-secondary: #11162a;
+--bg-tertiary: #1a1f3a;
+--bg-elevated: #14192d;
+--bg-glass: rgba(20, 25, 45, 0.7);
+--bg-glass-heavy: rgba(20, 25, 45, 0.85);
+
+/* Solid colors instead of gradients */
+--bg-gradient-primary: #d1457a;
+--bg-gradient-secondary: #00d9ff;
+--bg-gradient-success: #06ffa5;
+--bg-gradient-warning: #ffbe0b;
+--bg-gradient-danger: #d1457a;
+--bg-gradient-subtle: #11162a;
+
+--text-primary: #e4e8ff;
+--text-secondary: #a8b2e3;
+--text-tertiary: #7b88c7;
+--text-quaternary: #5665a7;
+--text-inverse: #0a0e1a;
+--text-muted: #4a5380;
+
+--border-primary: #2a3354;
+--border-secondary: #3d4769;
+--border-accent: #00d9ff;
+
+/* Accent Colors - Muted Pink/Cyan */
+--accent-primary: #d1457a;
+--accent-secondary: #00d9ff;
+--accent-hover: #e85b8f;
+--accent-light: rgba(209, 69, 122, 0.15);
+--accent-gradient: #d1457a;
+
+--success: #06ffa5;
+--success-gradient: #06ffa5;
+--warning: #ffbe0b;
+--warning-gradient: #ffbe0b;
+--danger: #d1457a;
+--danger-gradient: #d1457a;
+
+/* State Colors */
+--overdue-bg: #11162a;
+--overdue-text: #d1457a;
+--overdue-border: #2a3354;
+--overdue-accent: #d1457a;
+
+--upcoming-bg: #11162a;
+--upcoming-text: #ffbe0b;
+--upcoming-border: #2a3354;
+--upcoming-accent: #ffbe0b;
+
+--completed-bg: #11162a;
+--completed-text: #06ffa5;
+--completed-border: #2a3354;
+--completed-accent: #06ffa5;
+}
+
 /* Dark Mode - True Dark with Subtle Accents */
 [data-theme="dark"] {
 --bg-primary: #0a0a0a;
@@ -3012,12 +3130,32 @@ background: linear-gradient(135deg, #0a0a0a 0%, #171717 100%);
 border: 3px solid #262626;
 }
 
+.theme-dot.forest-theme {
+background: #819171;
+border: 3px solid #CBD5C0;
+}
+
+.theme-dot.tokyo-theme {
+background: #d1457a;
+border: 3px solid #2a3354;
+}
+
 .theme-dot.light-theme.active {
 border-color: var(--accent-primary);
 box-shadow: 0 0 0 2px var(--accent-light);
 }
 
 .theme-dot.dark-theme.active {
+border-color: var(--accent-primary);
+box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.theme-dot.forest-theme.active {
+border-color: var(--accent-primary);
+box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.theme-dot.tokyo-theme.active {
 border-color: var(--accent-primary);
 box-shadow: 0 0 0 2px var(--accent-light);
 }
