@@ -1,10 +1,10 @@
 # Book of Business - CRM & Lead Generation
 
-**Alpha Software Disclaimer**: This software is in active development. Features may change and database schema updates may require data migration. Use in production environments at your own risk.
+```**Alpha Software Disclaimer**: This software is in active development. Features may change and database schema updates may require data migration. Use in production environments at your own risk.```
 
 A high-performance CRM system with integrated AI-powered lead generation capabilities. Built with Rust for maximum performance, safety, and scalability.
 
-![Book of Business Screenshot](images/light-dashboard.png)
+![Book of Business Screenshot](images/dark-dashboard.png)
 
 ## Features
 
