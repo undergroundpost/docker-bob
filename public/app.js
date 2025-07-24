@@ -1,15 +1,17 @@
 function app() {
     return {
         // State
-        currentView: 'dashboard',
+        currentView: localStorage.getItem('bobCurrentView') || 'dashboard',
         // Simple Light/Dark theme system
         currentTheme: localStorage.getItem('bobTheme') || 'light',
+        loading: false,
         contacts: [],
         filteredContacts: [],
         searchQuery: '',
         contactFilter: 'all',
-        activeSettingsTab: 'general',
+        activeSettingsTab: localStorage.getItem('bobActiveSettingsTab') || 'general',
         selectedContact: null,
+        showContactForm: false,
         dashboardData: {},
         showOverdue: false,
         showUpcoming: false,
@@ -48,6 +50,14 @@ function app() {
         // Enhanced search state
         showSearchTooltip: false,
         
+        // Drag selection state
+        isDragSelecting: false,
+        dragStartY: 0,
+        dragCurrentY: 0,
+        
+        // Bulk mark as contacted state
+        showBulkContactForm: false,
+        
         // Quick actions state
         hoveredContactId: null,
         
@@ -76,7 +86,8 @@ function app() {
             openai_model: 'gpt-4',
             apollo_api_key: '',
             max_companies: 50,
-            request_delay: 1.2
+            max_employees_per_company: 25,
+            openai_prompt: ''
         },
         leadgenErrors: '',
         leadgenSessions: [],
@@ -90,11 +101,16 @@ function app() {
             email: '',
             phone: '',
             linkedin: '',
+            website: '',
             position: '',
-            contact_frequency: 7,
+            contact_frequency: 15,
             notes: '',
             custom_fields: {}
         },
+        
+        // Import/Backup tracking
+        lastImportDate: null,
+        lastBackupDate: null,
 
         // Initialize
         async init() {
@@ -109,11 +125,18 @@ function app() {
             await this.loadScraperCustomersCount();
             await this.loadLeadgenConfig();
             await this.loadLeadgenSessions();
+            await this.loadMetadata();
             
             // Load activities if on timeline view
             if (this.currentView === 'timeline') {
                 await this.loadActivities();
             }
+            
+            // Initialize indicators after DOM is fully rendered
+            setTimeout(() => {
+                this.updateFilterIndicator();
+                this.updateSettingsTabIndicator();
+            }, 200);
             
             // Watch for theme changes
             this.$watch('currentTheme', (value) => {
@@ -124,6 +147,7 @@ function app() {
             // Watch for contact filter changes
             this.$watch('contactFilter', () => {
                 this.filterContacts();
+                this.updateFilterIndicator();
             });
             
             // Watch for timeline contact filter changes
@@ -137,6 +161,41 @@ function app() {
                     this.showSearchTooltip = false;
                 }
             });
+            
+            // Save current view and settings tab to localStorage
+            this.$watch('currentView', (value) => {
+                localStorage.setItem('bobCurrentView', value);
+                // Reinitialize indicators when view changes
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.updateFilterIndicator();
+                        this.updateSettingsTabIndicator();
+                    }, 100);
+                });
+            });
+            
+            this.$watch('activeSettingsTab', (value) => {
+                localStorage.setItem('bobActiveSettingsTab', value);
+                // Re-initialize feather icons when switching tabs
+                this.$nextTick(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                });
+                // Update settings tab indicator
+                this.updateSettingsTabIndicator();
+            });
+            
+            // Watch for edit mode changes to reinitialize icons
+            this.$watch('editMode', () => {
+                this.$nextTick(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                });
+            });
+            
+            
         },
 
         // ================================
@@ -587,11 +646,25 @@ function app() {
         // API Methods
         async loadContacts() {
             try {
+                this.loading = true;
                 const response = await fetch('/api/contacts');
                 this.contacts = await response.json();
                 this.filterContacts(); // Update filtered contacts
+                
+                // Add staggered animation classes
+                this.$nextTick(() => {
+                    document.querySelectorAll('.contact-item').forEach((item, index) => {
+                        item.classList.add('animate-in');
+                        item.style.animationDelay = `${index * 50}ms`;
+                    });
+                });
             } catch (error) {
                 console.error('Error loading contacts:', error);
+            } finally {
+                // Minimum loading time for better UX
+                setTimeout(() => {
+                    this.loading = false;
+                }, 800);
             }
         },
 
@@ -650,6 +723,13 @@ function app() {
                         comm.originalNotes = comm.notes;
                     });
                 }
+                
+                // Re-initialize feather icons for contact detail view
+                this.$nextTick(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                });
             } catch (error) {
                 console.error('Error loading contact:', error);
             }
@@ -813,7 +893,9 @@ function app() {
                     this.selectedContactIds = [];
                     this.bulkContactMethod = '';
                     this.bulkContactNotes = '';
+                    this.bulkContactDate = '';
                     this.showBulkActions = false;
+                    this.showBulkContactForm = false;
                     await this.loadContacts();
                     await this.loadDashboard();
                 } else {
@@ -1091,6 +1173,13 @@ function app() {
 
         async addContact() {
             try {
+                // Add loading state to submit button
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+                }
+                
                 const response = await fetch('/api/contacts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1098,26 +1187,49 @@ function app() {
                 });
                 
                 if (response.ok) {
+                    // Success animation
+                    const modal = document.querySelector('.modal');
+                    if (modal) {
+                        modal.classList.add('success-flash');
+                        setTimeout(() => modal.classList.remove('success-flash'), 600);
+                    }
+                    
                     // Show friendly success message
                     this.showBulkSuccessMessage(`Welcome ${this.newContact.name}! Contact added successfully`);
                     
-                    this.showAddContact = false;
-                    this.newContact = {
-                        name: '',
-                        company: '',
-                        email: '',
-                        phone: '',
-                        linkedin: '',
-                        position: '',
-                        contact_frequency: 7,
-                        notes: '',
-                        custom_fields: {}
-                    };
+                    setTimeout(() => {
+                        this.showAddContact = false;
+                        this.newContact = {
+                            name: '',
+                            company: '',
+                            email: '',
+                            phone: '',
+                            linkedin: '',
+                            position: '',
+                            contact_frequency: 15,
+                            notes: '',
+                            custom_fields: {}
+                        };
+                    }, 500);
+                    
                     await this.loadContacts();
                     await this.loadDashboard();
                 }
             } catch (error) {
                 console.error('Error adding contact:', error);
+                // Show error state
+                const modal = document.querySelector('.modal');
+                if (modal) {
+                    modal.classList.add('shake');
+                    setTimeout(() => modal.classList.remove('shake'), 500);
+                }
+            } finally {
+                // Remove loading state
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                }
             }
         },
 
@@ -1193,6 +1305,58 @@ function app() {
             }
         },
 
+        // Drag selection functionality
+        startDragSelect(event) {
+            if (!this.showBulkActions) return;
+            
+            // Only start drag selection on left mouse button
+            if (event.button !== 0) return;
+            
+            // Don't start drag selection if clicking on interactive elements
+            if (event.target.closest('button, input, select, a, .contact-checkbox')) return;
+            
+            this.isDragSelecting = true;
+            this.dragStartY = event.clientY;
+            this.dragCurrentY = event.clientY;
+            
+            // Prevent text selection during drag
+            event.preventDefault();
+        },
+
+        updateDragSelect(event) {
+            if (!this.isDragSelecting || !this.showBulkActions) return;
+            
+            this.dragCurrentY = event.clientY;
+            
+            // Get all contact elements
+            const contactElements = document.querySelectorAll('.contact-item');
+            
+            // Determine selection range
+            const minY = Math.min(this.dragStartY, this.dragCurrentY);
+            const maxY = Math.max(this.dragStartY, this.dragCurrentY);
+            
+            // Select contacts in the drag range
+            contactElements.forEach((element, index) => {
+                const rect = element.getBoundingClientRect();
+                const contactCenterY = rect.top + rect.height / 2;
+                
+                if (contactCenterY >= minY && contactCenterY <= maxY) {
+                    const contact = this.filteredContacts[index];
+                    if (contact && !this.selectedContactIds.includes(contact.id)) {
+                        this.selectedContactIds.push(contact.id);
+                    }
+                }
+            });
+        },
+
+        endDragSelect(event) {
+            if (!this.isDragSelecting) return;
+            
+            this.isDragSelecting = false;
+            this.dragStartY = 0;
+            this.dragCurrentY = 0;
+        },
+
         async exportContacts() {
             try {
                 const response = await fetch('/api/export');
@@ -1207,6 +1371,9 @@ function app() {
                     
                     // Show success message
                     this.showBulkSuccessMessage('Contacts exported successfully!');
+                    
+                    // Refresh metadata to get new backup timestamp
+                    await this.loadMetadata();
                 } else {
                     const error = await response.json();
                     alert(error.error || 'Export failed');
@@ -1266,8 +1433,10 @@ function app() {
                     this.uploadResult = result.errors.length > 0 
                         ? `${successMsg} Some contacts had issues: ${result.errors.join(', ')}`
                         : successMsg;
+                    
                     await this.loadContacts();
                     await this.loadDashboard();
+                    await this.loadMetadata(); // Refresh metadata to get new import timestamp
                 } else {
                     this.uploadResult = `Oops! ${result.error}`;
                 }
@@ -1463,6 +1632,19 @@ function app() {
                 console.error('Error loading leadgen sessions:', error);
             }
         },
+        
+        async loadMetadata() {
+            try {
+                const response = await fetch('/api/metadata');
+                if (response.ok) {
+                    const metadata = await response.json();
+                    this.lastImportDate = metadata.last_import_date;
+                    this.lastBackupDate = metadata.last_backup_date;
+                }
+            } catch (error) {
+                console.error('Error loading metadata:', error);
+            }
+        },
 
         async runLeadGeneration() {
             try {
@@ -1560,10 +1742,50 @@ function app() {
             this.showApolloPassword = !this.showApolloPassword;
         },
 
+        getDefaultPrompt() {
+            return `Generate a CSV list of {count} REAL US-based engineering and manufacturing companies (10-1000 employees).
+
+Focus on: Product design consultancies, medical device manufacturers, hardware startups, aerospace suppliers, automotive suppliers, clean tech companies.
+
+Requirements:
+- REAL companies only (no fictional names)
+- US-based
+- Small to medium size (10-1000 employees)
+- Companies that develop physical products
+- Include complete website URLs
+
+Format exactly as CSV:
+company_name,company_website
+
+Example:
+IDEO,https://www.ideo.com
+Frog Design,https://www.frogdesign.com
+
+Provide exactly {count} entries in this CSV format:`;
+        },
+
         formatDate(dateString) {
             if (!dateString) return 'N/A';
             const date = new Date(dateString);
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        },
+        
+        formatRelativeDate(dateString) {
+            if (!dateString) return 'Never';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            
+            if (diffMinutes < 1) return 'Just now';
+            if (diffMinutes < 60) return `${diffMinutes}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 30) return `${diffDays}d ago`;
+            if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+            return `${Math.floor(diffDays / 365)}y ago`;
         },
 
         getSessionStatusColor(status) {
@@ -1574,6 +1796,64 @@ function app() {
                 case 'cancelled': return 'var(--warning)';
                 default: return 'var(--text-secondary)';
             }
+        },
+
+        updateFilterIndicator() {
+            // Only update if we're on the contacts page
+            if (this.currentView !== 'contacts') return;
+            
+            // Wait for DOM to be ready
+            this.$nextTick(() => {
+                const indicator = document.querySelector('.filter-indicator');
+                const activeButton = document.querySelector(`.filter-btn.filter-${this.contactFilter}`);
+                
+                if (indicator && activeButton && activeButton.offsetParent !== null) {
+                    const container = activeButton.parentElement;
+                    const containerRect = container.getBoundingClientRect();
+                    const buttonRect = activeButton.getBoundingClientRect();
+                    
+                    // Simple calculation - match button position relative to container
+                    const leftPosition = buttonRect.left - containerRect.left;
+                    const topPosition = buttonRect.top - containerRect.top;
+                    const width = buttonRect.width;
+                    const height = buttonRect.height;
+                    
+                    // Update indicator position and size to match button exactly
+                    indicator.style.left = `${leftPosition}px`;
+                    indicator.style.top = `${topPosition}px`;
+                    indicator.style.width = `${width}px`;
+                    indicator.style.height = `${height}px`;
+                }
+            });
+        },
+
+        updateSettingsTabIndicator() {
+            // Only update if we're on the settings page
+            if (this.currentView !== 'settings') return;
+            
+            // Wait for DOM to be ready
+            this.$nextTick(() => {
+                const indicator = document.querySelector('.settings-tab-indicator');
+                const activeButton = document.querySelector(`.settings-tab-${this.activeSettingsTab}`);
+                
+                if (indicator && activeButton && activeButton.offsetParent !== null) {
+                    const container = activeButton.parentElement;
+                    const containerRect = container.getBoundingClientRect();
+                    const buttonRect = activeButton.getBoundingClientRect();
+                    
+                    // Simple calculation - match button position relative to container
+                    const leftPosition = buttonRect.left - containerRect.left;
+                    const topPosition = buttonRect.top - containerRect.top;
+                    const width = buttonRect.width;
+                    const height = buttonRect.height;
+                    
+                    // Update indicator position and size to match button exactly
+                    indicator.style.left = `${leftPosition}px`;
+                    indicator.style.top = `${topPosition}px`;
+                    indicator.style.width = `${width}px`;
+                    indicator.style.height = `${height}px`;
+                }
+            });
         }
     }
 }

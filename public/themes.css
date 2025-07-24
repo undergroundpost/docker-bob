@@ -1,0 +1,192 @@
+/* ================================
+ BOOK OF BUSINESS DESIGN SYSTEM
+ THEMES - Color Schemes and Theme Variations
+ ================================ */
+
+/* Light Mode */
+[data-theme="light"] {
+/* Background Colors */
+--bg-primary: #ffffff;
+--bg-secondary: #f8fafc;
+--bg-tertiary: #f1f5f9;
+--bg-elevated: #ffffff;
+
+/* Toolbar Active State */
+--toolbar-btn-active-bg: var(--accent-primary);
+
+/* Glass Backgrounds */
+--toolbar-glass-bg: rgba(255, 255, 255, 0.08);
+--bg-glass: rgba(255, 255, 255, 0.08);
+--bg-glass-heavy: rgba(255, 255, 255, 0.12);
+
+/* Text Colors */
+--text-primary: #0f172a;
+--text-secondary: #475569;
+--text-tertiary: #64748b;
+--text-quaternary: #94a3b8;
+--text-inverse: #ffffff;
+--text-muted: #cbd5e1;
+
+/* Border Colors */
+--border-primary: #e2e8f0;
+--border-secondary: #cbd5e1;
+--border-accent: #3b82f6;
+
+/* Accent Colors */
+--accent-primary: #3b82f6;
+--accent-secondary: #1d4ed8;
+--accent-hover: #2563eb;
+--accent-light: rgba(59, 130, 246, 0.1);
+
+/* Status Colors */
+--success: #10b981;
+--warning: #f59e0b;
+--danger: #ef4444;
+
+/* State Colors */
+--completed-bg: #f8fafc;
+--completed-text: #059669;
+--completed-border: #e2e8f0;
+--completed-accent: #10b981;
+}
+
+/* Forest Theme - Nature-inspired with Sage Green accents */
+[data-theme="forest"] {
+/* Background Colors */
+--bg-primary: #fafaf8;
+--bg-secondary: #f5f5f2;
+--bg-tertiary: #ebebde;
+--bg-elevated: #ffffff;
+
+/* Toolbar Active State */
+--toolbar-btn-active-bg: var(--accent-primary);
+
+/* Glass Backgrounds */
+--toolbar-glass-bg: rgba(250, 250, 248, 0.08);
+--bg-glass: rgba(250, 250, 248, 0.08);
+--bg-glass-heavy: rgba(250, 250, 248, 0.12);
+
+--text-primary: #2d3929;
+--text-secondary: #4a5842;
+--text-tertiary: #697761;
+--text-quaternary: #8a9882;
+--text-inverse: #ffffff;
+--text-muted: #cbd5c0;
+
+--border-primary: #dfe6da;
+--border-secondary: #cbd5c0;
+--border-accent: #819171;
+
+/* Accent Colors - Sage Green */
+--accent-primary: #819171;
+--accent-secondary: #758467;
+--accent-hover: #9CAF88;
+--accent-light: rgba(129, 145, 113, 0.15);
+
+--success: #819171;
+--success-gradient: #819171;
+--warning: #d4a574;
+--warning-gradient: #d4a574;
+--danger: #c67856;
+--danger-gradient: #c67856;
+
+/* State Colors */
+--completed-bg: #f5f5f2;
+--completed-text: #758467;
+--completed-border: #dfe6da;
+--completed-accent: #819171;
+}
+
+/* Tokyo Theme - Tech-inspired with Neon accents */
+[data-theme="tokyo"] {
+/* Background Colors */
+--bg-primary: #0a0e1a;
+--bg-secondary: #11162a;
+--bg-tertiary: #1a1f3a;
+--bg-elevated: #14192d;
+
+/* Toolbar Active State */
+--toolbar-btn-active-bg: var(--accent-primary);
+
+/* Glass Backgrounds */
+--toolbar-glass-bg: rgba(20, 25, 45, 0.08);
+--bg-glass: rgba(20, 25, 45, 0.08);
+--bg-glass-heavy: rgba(20, 25, 45, 0.12);
+
+--text-primary: #e4e8ff;
+--text-secondary: #a8b2e3;
+--text-tertiary: #7b88c7;
+--text-quaternary: #5665a7;
+--text-inverse: #0a0e1a;
+--text-muted: #3d4769;
+
+--border-primary: #2a3354;
+--border-secondary: #3d4769;
+--border-accent: #d1457a;
+
+/* Accent Colors - Muted Pink/Cyan */
+--accent-primary: #d1457a;
+--accent-secondary: #00d9ff;
+--accent-hover: #e85b8f;
+--accent-light: rgba(209, 69, 122, 0.15);
+
+--success: #06ffa5;
+--success-gradient: #06ffa5;
+--warning: #ffbe0b;
+--warning-gradient: #ffbe0b;
+--danger: #d1457a;
+--danger-gradient: #d1457a;
+
+/* State Colors */
+--completed-bg: #11162a;
+--completed-text: #06ffa5;
+--completed-border: #2a3354;
+--completed-accent: #06ffa5;
+}
+
+/* Dark Mode - True Dark with Subtle Accents */
+[data-theme="dark"] {
+/* Background Colors */
+--bg-primary: #0a0a0a;
+--bg-secondary: #171717;
+--bg-tertiary: #262626;
+--bg-elevated: #1a1a1a;
+
+/* Toolbar Active State */
+--toolbar-btn-active-bg: var(--accent-primary);
+
+/* Glass Backgrounds */
+--toolbar-glass-bg: rgba(26, 26, 26, 0.08);
+--bg-glass: rgba(26, 26, 26, 0.08);
+--bg-glass-heavy: rgba(26, 26, 26, 0.12);
+
+--text-primary: #f5f5f5;
+--text-secondary: #a3a3a3;
+--text-tertiary: #737373;
+--text-quaternary: #525252;
+--text-inverse: #0a0a0a;
+--text-muted: #404040;
+
+--border-primary: #262626;
+--border-secondary: #404040;
+--border-accent: #38bdf8;
+
+/* Accent Colors */
+--accent-primary: #3b82f6;
+--accent-secondary: #2563eb;
+--accent-hover: #1d4ed8;
+--accent-light: rgba(59, 130, 246, 0.1);
+
+--success: #10b981;
+--success-gradient: #34d399;
+--warning: #f59e0b;
+--warning-gradient: #fbbf24;
+--danger: #ef4444;
+--danger-gradient: #f87171;
+
+/* State Colors */
+--completed-bg: #171717;
+--completed-text: #34d399;
+--completed-border: #262626;
+--completed-accent: #10b981;
+}

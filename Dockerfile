@@ -1,46 +1,58 @@
-FROM node:18-alpine
+# Multi-stage build for optimal image size
+FROM rust:1.88-slim-bookworm AS builder
 
-# Install Chromium and all required dependencies for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    font-noto-emoji \
-    wqy-zenhei \
-    dbus \
-    dbus-x11 \
-    && rm -rf /var/cache/apk/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Add a non-root user for better security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Tell Puppeteer to use the installed Chromium
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
-    CHROME_BIN=/usr/bin/chromium-browser \
-    CHROMIUM_FLAGS="--no-sandbox --disable-dev-shm-usage"
-
+# Create app directory
 WORKDIR /app
 
-# Copy package files and install dependencies as root
-COPY package*.json ./
-RUN npm install --omit=dev && npm cache clean --force
+# Copy manifests
+COPY Cargo.toml Cargo.lock ./
 
-# Copy application files
-COPY . .
+# Create dummy main.rs to build dependencies
+RUN mkdir src && echo "fn main() {}" > src/main.rs
 
-# Create data directory and set permissions
-RUN mkdir -p data uploads && \
-    chown -R nodejs:nodejs /app
+# Build dependencies (this is cached when source code changes)
+RUN cargo build --release && rm src/main.rs target/release/deps/crm_rust*
 
-# Switch to non-root user
-USER nodejs
+# Copy source code
+COPY src ./src
 
+# Build application
+RUN cargo build --release
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user
+RUN useradd -r -s /bin/false -m -d /app crm
+
+# Copy binary from builder stage
+COPY --from=builder /app/target/release/crm-rust /app/crm-rust
+
+# Create necessary directories
+RUN mkdir -p /app/public && chown -R crm:crm /app
+
+# Switch to app user
+USER crm
+WORKDIR /app
+
+# Expose port
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/api/metadata || exit 1
+
+# Run the application
+CMD ["./crm-rust"]

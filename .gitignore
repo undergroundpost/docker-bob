@@ -1,35 +1,44 @@
-# Dependencies
-node_modules/
+# Rust build artifacts
+target/
 
-# User data and database
-data/
+# Database files
 *.db
-
-# Uploaded files
-uploads/
+*.sqlite
+*.sqlite3
 
 # Environment variables
 .env
 .env.local
 .env.production
 
-# OS files
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# IDE files
+# Editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # Logs
-logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+
+# Docker volumes (auto-generated)
+postgres_data/
+minio_data/
+redis_data/
 
 # Temporary files
 *.tmp
 *.temp
+
+# Migration artifacts
+migration_data.sql
+test_migration.*

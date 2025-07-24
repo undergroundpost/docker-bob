@@ -1,0 +1,370 @@
+/* ================================
+ BOOK OF BUSINESS DESIGN SYSTEM
+ BASE STYLES - Variables, Typography, Global Foundations
+ ================================ */
+
+/* Typography & Animation Foundation */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+/* Typography System */
+--font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+/* Glass Toolbar Aesthetic Variables */
+--toolbar-glass-bg: rgba(255, 255, 255, 0.08);
+--toolbar-glass-border: 1px solid rgba(255, 255, 255, 0.25);
+--toolbar-glass-shadow: 
+  inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+  inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
+  0 8px 32px rgba(0, 0, 0, 0.12),
+  0 2px 8px rgba(0, 0, 0, 0.08);
+--toolbar-glass-shadow-floating: 
+  inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
+  inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+  0 12px 48px rgba(0, 0, 0, 0.15),
+  0 4px 16px rgba(0, 0, 0, 0.1);
+--toolbar-glass-backdrop: blur(10px) saturate(140%);
+
+/* Glass Toolbar Elements */
+--toolbar-btn-background: transparent;
+--toolbar-btn-border: none;
+--toolbar-btn-shadow: none;
+--toolbar-btn-hover-background: rgba(0, 0, 0, 0.05);
+--toolbar-btn-outline-border: 1px solid rgba(255, 255, 255, 0.25);
+--toolbar-btn-outline-hover-border: 1px solid rgba(255, 255, 255, 0.35);
+--toolbar-input-background: transparent;
+--toolbar-input-border: none;
+--toolbar-input-shadow: 
+  inset 0 2px 4px rgba(0, 0, 0, 0.15),
+  inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+--toolbar-input-shadow-focus: 
+  inset 0 2px 4px rgba(0, 0, 0, 0.15),
+  inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+--toolbar-select-background: transparent;
+--toolbar-select-shadow: 
+  inset 0 2px 4px rgba(0, 0, 0, 0.15),
+  inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+--toolbar-status-border: 1px solid rgba(255, 255, 255, 0.12);
+--toolbar-status-rim-shadow: 
+  inset 0 2px 4px rgba(0, 0, 0, 0.12),
+  inset 0 -1px 2px rgba(255, 255, 255, 0.06),
+  inset 0 -1px 0 0 rgba(255, 255, 255, 0.15),
+  inset 0 1px 0 0 rgba(0, 0, 0, 0.04);
+
+/* Spacing Scale */
+--space-3xs: 0.125rem;   /* 2px */
+--space-2xs: 0.25rem;    /* 4px */
+--space-xs: 0.5rem;      /* 8px */
+--space-sm: 0.75rem;     /* 12px */
+--space-md: 1rem;        /* 16px */
+--space-lg: 1.5rem;      /* 24px */
+--space-xl: 2rem;        /* 32px */
+--space-2xl: 3rem;       /* 48px */
+--space-3xl: 4rem;       /* 64px */
+--space-4xl: 6rem;       /* 96px */
+
+/* Typography Scale */
+--text-xs: 0.75rem;      /* 12px */
+--text-sm: 0.875rem;     /* 14px */
+--text-base: 1rem;       /* 16px */
+--text-lg: 1.125rem;     /* 18px */
+--text-xl: 1.25rem;      /* 20px */
+--text-2xl: 1.5rem;      /* 24px */
+--text-3xl: 1.875rem;    /* 30px */
+--text-4xl: 2.25rem;     /* 36px */
+--text-5xl: 3rem;        /* 48px */
+--text-6xl: 3.75rem;     /* 60px */
+
+/* Border Radius */
+--radius-xs: 3px;
+--radius-sm: 6px;
+--radius-md: 8px;
+--radius-lg: 12px;
+--radius-xl: 16px;
+--radius-2xl: 24px;
+--radius-3xl: 32px;
+--radius-full: 9999px;
+
+/* Shadow System */
+--shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+--shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+--shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+--shadow-glow: 0 0 20px rgba(59, 130, 246, 0.4);
+--shadow-colorful: 0 8px 32px rgba(59, 130, 246, 0.12);
+--shadow-floating: 0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+
+/* Animation System */
+--duration-instant: 100ms;
+--duration-fast: 200ms;
+--duration-normal: 300ms;
+--duration-slow: 500ms;
+--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+--ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+--ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+--ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+/* Info/Message Box Variables */
+--info-box-bg: var(--bg-elevated, #ffffff);
+--info-box-border: 2px dashed var(--border-secondary, #cbd5e1);
+--info-box-shadow: var(--shadow-sm);
+--info-box-radius: var(--radius-2xl);
+--info-box-padding: var(--space-4xl);
+
+/* Toolbar Text Colors */
+--toolbar-text-default: var(--text-secondary, #475569);
+--toolbar-text-hover: var(--text-primary, #0f172a);
+--toolbar-text-active: var(--text-inverse, #ffffff);
+--toolbar-label-color: var(--text-secondary, #475569);
+--toolbar-value-color: var(--text-primary, #0f172a);
+
+/* Toolbar Active Background - Global fallback */
+--toolbar-btn-active-bg: var(--accent-primary, #3b82f6);
+
+/* Responsive Breakpoints */
+--breakpoint-sm: 576px;
+--breakpoint-md: 768px;
+--breakpoint-lg: 992px;
+--breakpoint-xl: 1200px;
+--breakpoint-2xl: 1400px;
+
+/* Navigation System Variables - Global for consistency */
+--sidebar-width: 200px;
+--nav-button-height: 40px;
+--icon-size-xs: 14px;
+--icon-size-sm: 18px;
+--icon-size-md: 20px;
+--icon-size-lg: 24px;
+
+/* Toggle/Theme Switcher Dimensions */
+--toggle-track-width: 50px;
+--toggle-track-height: 26px;
+--toggle-thumb-size: 22px;
+--toggle-thumb-travel: 24px;
+
+/* Component Dimensions */
+--step-number-size: 32px;
+--activity-icon-size: 40px;
+
+/* Opacity Scale */
+--opacity-5: 0.05;
+--opacity-10: 0.1;
+--opacity-15: 0.15;
+--opacity-20: 0.2;
+--opacity-25: 0.25;
+--opacity-30: 0.3;
+--opacity-40: 0.4;
+--opacity-50: 0.5;
+--opacity-60: 0.6;
+--opacity-70: 0.7;
+--opacity-80: 0.8;
+--opacity-90: 0.9;
+
+/* Common Transitions */
+--transition-fast: all var(--duration-fast) var(--ease-out);
+--transition-normal: all var(--duration-normal) var(--ease-out);
+--transition-colors: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+
+/* ================================
+ HEADER SPACING SYSTEM
+ ================================ */
+
+/* 
+ * Global header spacing for consistent content density
+ * 
+ * Usage: Use these variables for all workspace headers (Dashboard, Contacts, etc.)
+ * 
+ * Previous spacing was excessive:
+ * - Above headers: 48-96px 
+ * - Below headers: 80px (double margin)
+ * 
+ * New optimized spacing:
+ * - Above headers: 24px (50% reduction)
+ * - Below headers: 32px (60% reduction)
+ * - Mobile: 16px (more compact)
+ */
+--header-spacing-above: var(--space-lg);    /* 24px - reduced from 48-96px */
+--header-spacing-below: var(--space-xl);    /* 32px - reduced from 80px total */
+--header-spacing-mobile: var(--space-md);   /* 16px - more compact on mobile */
+}
+
+/* ================================
+ GLOBAL FOUNDATIONS
+ ================================ */
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+html {
+font-size: 16px;
+scroll-behavior: smooth;
+}
+
+body {
+font-family: var(--font-primary);
+background: var(--bg-primary);
+color: var(--text-primary);
+line-height: 1.6;
+transition: all var(--duration-normal) var(--ease-out);
+min-height: 100vh;
+font-weight: 400;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+position: relative;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+}
+
+/* ================================
+ UTILITY CLASSES
+ ================================ */
+
+/* Text Utilities */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Transition Utilities */
+.transition-fast { transition: var(--transition-fast); }
+.transition-normal { transition: var(--transition-normal); }
+.transition-colors { transition: var(--transition-colors); }
+
+/* Display Utilities */
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.gap-xl { gap: var(--space-xl); }
+
+/* Layout Utilities */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+/* Border Radius Utilities */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-2xl { border-radius: var(--radius-2xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Padding Utilities */
+.p-xs { padding: var(--space-xs); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+.p-xl { padding: var(--space-xl); }
+.p-2xl { padding: var(--space-2xl); }
+
+/* Margin Utilities */
+.m-0 { margin: 0; }
+.mb-xs { margin-bottom: var(--space-xs); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+.mb-2xl { margin-bottom: var(--space-2xl); }
+
+/* Color Utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+.text-accent { color: var(--accent-primary); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+
+/* Background Utilities */
+.bg-primary { background: var(--bg-primary); }
+.bg-secondary { background: var(--bg-secondary); }
+.bg-elevated { background: var(--bg-elevated); }
+.bg-accent { background: var(--accent-primary); }
+
+/* Border Utilities */
+.border { border: 1px solid var(--border-primary); }
+.border-secondary { border: 1px solid var(--border-secondary); }
+.border-accent { border: 1px solid var(--border-accent); }
+
+/* Shadow Utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* Text Alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+
+/* Opacity Utilities */
+.opacity-60 { opacity: var(--opacity-60); }
+
+/* ================================
+ CARD LIST SYSTEM
+ ================================ */
+
+/* 
+ * Universal card list spacing for consistent UX across all pages
+ * 
+ * Usage: Apply .card-list class to containers holding multiple cards
+ * Standard spacing: var(--space-md) (16px) provides optimal scanability
+ * 
+ * Updated lists to use this system:
+ * - .contact-list (changed from --space-sm)
+ * - .communications-list (changed from --space-lg) 
+ * - .timeline-list (already --space-md)
+ * - .sessions-list (already --space-md)
+ */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md); /* 16px - optimal balance for scanability */
+}
+
+/* Individual card base styling */
+.card-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: var(--transition-fast);
+}
+
+/* Global card hover system - clean background-only effects */
+.card-item:hover,
+.card-hover:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-secondary);
+  /* No transform - cards should only have subtle background changes */
+}
